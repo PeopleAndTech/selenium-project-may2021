@@ -116,4 +116,11 @@ public class EbayTest extends TestBase {
     }
 
 
+
+    // HW :
+    // develop 10 use case test scenario
+    // in those tests make sure to use at least 50+ different locator (xpath, id) try to ignore using class name
+    // use logger.info
+    // use validation after every actions
+
 }
