@@ -2,11 +2,14 @@ package com.peoplentech.selenium;
 
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 public class EbayTest extends TestBase {
     private static final Logger logger = Logger.getLogger(EbayTest.class);
@@ -57,6 +60,23 @@ public class EbayTest extends TestBase {
     }
 
     @Test
+    public void validateUserBeingAbleToHandleDropDownOptions() {
+        setupBrowser("chrome", "https://www.ebay.com");
+
+        List<WebElement> dropdownList = driver.findElements(By.xpath("//select[@id='gh-cat']/option"));
+
+        System.out.println(dropdownList.size());
+
+        for (int i = 0; i < dropdownList.size(); i++) {
+            System.out.println(dropdownList.get(i).getText());
+            // System.out.println(dropdownList.get(i).getAttribute("value"));
+        }
+
+        closeBrowser();
+    }
+
+
+    @Test
     public void validateUserBeingAbleToChooseOptionFromMouseHover() {
         setupBrowser("chrome", "https://www.ebay.com");
 
@@ -68,5 +88,32 @@ public class EbayTest extends TestBase {
 
         closeBrowser();
     }
+
+
+    @Test
+    public void userShouldBeAbleToScrollDown() {
+        setupBrowser("chrome", "https://www.ebay.com");
+
+        waitFor(2);
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("window.scrollBy(0,1000)");
+        waitFor(2);
+
+        closeBrowser();
+    }
+
+    @Test
+    public void userShouldBeAbleToScrollDownToElement() {
+        setupBrowser("chrome", "https://www.ebay.com");
+        WebElement element = driver.findElement(By.linkText("Registration"));
+
+        waitFor(2);
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView(true);", element);
+        waitFor(2);
+
+        closeBrowser();
+    }
+
 
 }

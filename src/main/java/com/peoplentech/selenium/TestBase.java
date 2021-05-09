@@ -1,7 +1,6 @@
 package com.peoplentech.selenium;
 
 
-import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -11,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 public class TestBase {
 
-    private static final Logger logger = Logger.getLogger(TestBase.class);
     public static WebDriver driver;
 
     public static void setupBrowser(String browserName, String url) {
@@ -24,6 +22,7 @@ public class TestBase {
         }
         driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().window().maximize();
         driver.get(url);
     }
 
