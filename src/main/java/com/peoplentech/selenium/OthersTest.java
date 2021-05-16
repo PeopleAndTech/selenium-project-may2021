@@ -4,7 +4,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Set;
 
 public class OthersTest extends TestBaseOld {
 
@@ -58,6 +61,44 @@ public class OthersTest extends TestBaseOld {
         waitFor(4);
         driver.switchTo().alert().accept();
 
+
+        closeBrowser();
+    }
+
+
+    @Test
+    public void validateUserCanHandleMultipleTabs() {
+        setupBrowser("chrome", "https://www.google.com/gmail/about/#");
+
+        //Set<String> windowsBeforeOpeningNewTab =  driver.getWindowHandles();
+        //System.out.println("window1"+windowsBeforeOpeningNewTab);
+
+
+        clickOnLinkText("Create an account");
+
+        Set<String> windowsAfterOpeningNewTab = driver.getWindowHandles();
+        String currentWindowsHash = driver.getWindowHandle();
+        for (String window : windowsAfterOpeningNewTab) {
+            if (!window.equalsIgnoreCase(currentWindowsHash)) {
+                driver.switchTo().window(window);
+            }
+        }
+
+        //System.out.println(driver.getWindowHandle());
+
+        driver.findElement(By.xpath("//input[@aria-label='First name']")).sendKeys("FName");
+        driver.findElement(By.xpath("//input[@aria-label='Last name']")).sendKeys("LName");
+        clickOnXpath("(//div[@class='VfPpkd-RLmnJb'])[1]");
+
+        waitFor(2);
+
+        WebElement element = driver.findElement(By.xpath("//div[@class='o6cuMc']"));
+        String actual = element.getText();
+
+        // acceptance criteria :  if a user doesn't choose a gmail address
+        // they should  see a error message "Choose a email address"
+
+        Assert.assertEquals(actual, "Choose a email address", "error message didn't match");
 
         closeBrowser();
     }
