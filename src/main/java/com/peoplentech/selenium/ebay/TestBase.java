@@ -5,9 +5,13 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 public class TestBase {
@@ -15,11 +19,43 @@ public class TestBase {
     public static WebDriver driver;
 
     @BeforeMethod
-    public static void setupBrowser() {
+    public static void setupBrowser() throws MalformedURLException {
         String browserName = "chrome";
         String url = "https://www.ebay.com";
         String os = "mac";
+        String platform = "cloud";
 
+        if (platform.equalsIgnoreCase("local")) {
+            driver = setupLocalDriver(os, browserName);
+        } else {
+            driver = setupCloudDriver();
+        }
+        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().window().maximize();
+        driver.get(url);
+    }
+
+    private static WebDriver setupCloudDriver() throws MalformedURLException {
+        String userName = "meronasgedom_GSMUOb";
+        String accessKey = "hoBrfWKNz6SeMTLuYKGb";
+
+        String urlOfBrowserstack = "https://" + userName + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub";
+        URL url = new URL(urlOfBrowserstack);//
+
+        DesiredCapabilities caps = new DesiredCapabilities();
+        caps.setCapability("os_version", "Mojave");
+        caps.setCapability("resolution", "1600x1200");
+        caps.setCapability("browser", "Chrome");
+        caps.setCapability("browser_version", "89.0");
+        caps.setCapability("os", "OS X");
+        caps.setCapability("name", "cloud execution test : 01");
+
+        WebDriver driver = new RemoteWebDriver(url, caps);
+        return driver;
+    }
+
+    private static WebDriver setupLocalDriver(String os, String browserName) {
         if (os.equalsIgnoreCase("mac")) {
             if (browserName.equalsIgnoreCase("chrome")) {
                 System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver");
@@ -37,10 +73,7 @@ public class TestBase {
                 driver = new FirefoxDriver();
             }
         }
-        driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        driver.manage().window().maximize();
-        driver.get(url);
+        return driver;
     }
 
     @AfterMethod
@@ -48,7 +81,6 @@ public class TestBase {
         waitFor(5);
         driver.quit();
     }
-
 
     public static void waitFor(int seconds) {
         try {
